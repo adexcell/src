@@ -5,9 +5,8 @@ from helpers.config import Config
 
 
 class TestApp(unittest.TestCase):
-    def setUp(self):
-        pass
-
+    
+    @unittest.skipUnless(sys.platform.startswith('win'), 'requires Windows')
     def test_default_config_path(self):
         self.assertTrue(helpers.config.WINDOWS, msg='System not Win')
         print(helpers.config.WINDOWS)
@@ -16,7 +15,7 @@ class TestApp(unittest.TestCase):
         data = Config.init_env_config_path()
         self.assertEqual(len(data), 5, msg='Some path not available')
         print('All path available')
-
+    
     def test_init_env_config_path(self):
         data = Config.init_env_config_path()
         self.assertEqual(data[0], './', msg='System not Linux')
@@ -30,9 +29,24 @@ class TestApp(unittest.TestCase):
     def test_get_verbosity_level(self):  # не уверен что правильно понял и применил assertLogs
         data = Config.get_verbosity_level()
         self.assertLogs(data, 'console')
+    
+    def test_init_config(self):
+        self.assertIsNotNone(self.test_cfg.config_file)
+        self.assertIsNotNone(self.test_cfg.config_paths)
+    
+    def test_level_none(self):
+        levels = 'critical, error, warning, info, debug'
+        self.assertEqual(Config.get_verbosity_level(level=None), levels, )
 
-    def tearDown(self):
-        pass
+    def test_all_levels(self):
+        self.assertEqual(Config.get_verbosity_level(level='console'), 10)
+        self.assertEqual(Config.get_verbosity_level(level='debug'), 10)
+        self.assertEqual(Config.get_verbosity_level(level='info'), 20)
+        self.assertEqual(Config.get_verbosity_level(level='warning'), 30)
+        self.assertEqual(Config.get_verbosity_level(level='error'), 40)
+        self.assertEqual(Config.get_verbosity_level(level='critical'), 50)
+
+    
 
 
 if __name__ == '__main__':

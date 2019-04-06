@@ -3,6 +3,7 @@ import sys
 import helpers.config
 from helpers.config import Config
 
+test_cfg = config.Config()
 
 class TestApp(unittest.TestCase):
     
